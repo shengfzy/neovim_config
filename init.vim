@@ -45,6 +45,9 @@ call plug#begin('~/.config/nvim/plugged')
     " terminal
     Plug 'skywind3000/vim-terminal-help'
 
+    " debug
+    Plug 'puremourning/vimspector', {'do': './install_gadget.py --enable-rust --enable-python'}
+
 call plug#end()
 
 " ==== cateduo/vsdark.nvim ====
@@ -72,24 +75,29 @@ let g:coc_global_extensions = [
       \ ]
 
 set signcolumn=number
-" <TAB> to select candidate forward or
-" pump completion candidate
+
+" Use tab for trigger completion with characters ahead and navigate
+" NOTE: There's always complete item selected by default, you may want to enable
+" no select by `"suggest.noselect": true` in your configuration file
+" NOTE: Use command ':verbose imap <tab>' to make sure tab is not mapped by
+" other plugin before putting this into your config
 inoremap <silent><expr> <TAB>
-      \ pumvisible() ? "\<C-n>" :
-      \ <SID>check_back_space() ? "\<TAB>" :
+      \ coc#pum#visible() ? coc#pum#next(1) :
+      \ CheckBackspace() ? "\<Tab>" :
       \ coc#refresh()
-" <s-TAB> to select candidate backward
-inoremap <expr><s-TAB> pumvisible() ? "\<C-p>" : "\<C-h>"
-function! s:check_back_space() abort
-  let col = col('.')-1
-  return !col || getline('.')[col - 1] =~# '\s'
+
+inoremap <expr><S-TAB> coc#pum#visible() ? coc#pum#prev(1) : "\<C-h>"
+
+" Make <CR> to accept selected completion item or notify coc.nvim to format
+" <C-g>u breaks current undo, please make your own choice
+inoremap <silent><expr> <CR> coc#pum#visible() ? coc#pum#confirm()
+                              \: "\<C-g>u\<CR>\<c-r>=coc#on_enter()\<CR>"
+
+function! CheckBackspace() abort
+  let col = col('.') - 1
+  return !col || getline('.')[col - 1]  =~# '\s'
 endfunction
 
-" <CR> to comfirm selected candidate
-" only when there's selected complete item
-if exists('*complete_info')
-  inoremap <silent><expr> <CR> complete_info(['selected'])['selected'] != -1 ? "\<C-y>" : "\<C-g>u\<CR>"
-endif
 
 nnoremap <silent> K :call <SID>show_documentation()<CR>
 function! s:show_documentation()
@@ -191,3 +199,23 @@ nmap <leader>f :Leaderf file<CR>
 nmap <leader>b :Leaderf! buffer<CR>
 nmap <leader>F :Leaderf rg<CR>
 let g:Lf_DevIconsFont = "DroidSansMono Nerd Font Mono"
+
+
+" ==== puremourning/vimspector ====
+let g:vimspector_enable_mappings = 'HUMAN'
+
+function! s:generate_vimspector_conf()
+  if empty(glob( '.vimspector.json' ))
+    if &filetype == 'c' || 'cpp' 
+      !cp ~/.config/nvim/vimspector_conf/c.json ./.vimspector.json
+    elseif &filetype == 'python'
+      !cp ~/.config/nvim/vimspector_conf/python.json ./.vimspector.json
+    endif
+  endif
+  e .vimspector.json
+endfunction
+
+command! -nargs=0 Gvimspector :call s:generate_vimspector_conf()
+
+nmap <Leader>v <Plug>VimspectorBalloonEval
+xmap <Leader>v <Plug>vimspectorBalloonEval
