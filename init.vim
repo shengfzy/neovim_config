@@ -13,6 +13,8 @@ set smartcase
 set notimeout
 set jumpoptions=stack
 
+filetype plugin indent on
+
 let mapleader="\<SPACE>"
 
 if empty(glob('~/.config/nvim/autoload/plug.vim'))
@@ -49,6 +51,9 @@ call plug#begin('~/.config/nvim/plugged')
     Plug 'puremourning/vimspector', {'do': './install_gadget.py --enable-rust --enable-python'}
 
 call plug#end()
+
+" ==== terminal-help ====
+let g:terminal_key = '≠'
 
 " ==== cateduo/vsdark.nvim ====
 
@@ -206,13 +211,17 @@ let g:vimspector_enable_mappings = 'HUMAN'
 
 function! s:generate_vimspector_conf()
   if empty(glob( '.vimspector.json' ))
-    if &filetype == 'c' || 'cpp' 
+    " get the current filename
+    let filename = expand('%:t')
+ 
+    " detect the file type
+    if filename =~? '\.cpp$'
       !cp ~/.config/nvim/vimspector_conf/c.json ./.vimspector.json
-    elseif &filetype == 'python'
+    elseif filename =~? '\.py$'
       !cp ~/.config/nvim/vimspector_conf/python.json ./.vimspector.json
     endif
   endif
-  e .vimspector.json
+  #e .vimspector_conf.json
 endfunction
 
 command! -nargs=0 Gvimspector :call s:generate_vimspector_conf()
