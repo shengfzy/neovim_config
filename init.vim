@@ -14,8 +14,18 @@ set notimeout
 set jumpoptions=stack
 
 filetype plugin indent on
-
 let mapleader="\<SPACE>"
+
+" ==== Custome Key Map ====
+noremap ˙ <c-w>h
+noremap ¬ <c-w>l
+noremap ∆ <c-w>j
+noremap ˚ <c-w>k
+inoremap ˙ <esc><c-w>h
+inoremap ¬ <esc><c-w>l
+inoremap ∆ <esc><c-w>j
+inoremap ˚ <esc><c-w>k
+
 
 if empty(glob('~/.config/nvim/autoload/plug.vim'))
   :exe '!curl -fLo ~/.config/nvim/autoload/plug.vim --create-dirs
