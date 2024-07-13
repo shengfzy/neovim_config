@@ -26,6 +26,11 @@ inoremap ¬ <esc><c-w>l
 inoremap ∆ <esc><c-w>j
 inoremap ˚ <esc><c-w>k
 
+noremap <C-h> 3h
+noremap <C-l> 3l
+noremap <C-j> 3j
+noremap <C-k> 3k
+
 
 if empty(glob('~/.config/nvim/autoload/plug.vim'))
   :exe '!curl -fLo ~/.config/nvim/autoload/plug.vim --create-dirs
